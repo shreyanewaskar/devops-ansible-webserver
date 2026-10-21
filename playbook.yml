@@ -1,0 +1,38 @@
+---
+- name: Configure Web Server Using Ansible
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Start Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Deploy custom webpage
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>My DevOps Project</title>
+          </head>
+          <body>
+              <h1>My DevOps Project</h1>
+              <p>Website deployed automatically using Ansible and Nginx!</p>
+          </body>
+          </html>
+        mode: '0644'
+
+    - name: Verify website response
+      ansible.builtin.uri:
+        url: http://127.0.0.1/
+        status_code: 200
